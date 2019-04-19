@@ -1,0 +1,5 @@
+#!/bin/sh
+
+rm -rf ./bin
+rm -rf ./kat_out
+rm -rf ./tmp

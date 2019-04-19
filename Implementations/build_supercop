@@ -1,0 +1,41 @@
+#!/bin/sh
+
+#build ONE combination of target, implementation and algorithm
+
+#TARGET="drygascon"
+#PARAM="5"
+#IMPL="ref"
+#ALGOTYPE="hash"
+
+if [ "$#" -ne 4 ]; then
+    echo "Illegal number of parameters"
+    echo "[aead|hash] target param impl"
+    exit 1
+fi
+
+ALGOTYPE=$1
+TARGETBASE=$2
+PARAM=$3
+IMPL=$4
+
+TARGET=${TARGETBASE}$PARAM
+
+TOOL="gcc -std=c99 -Wall -Wextra -Wshadow -fsanitize=address,undefined -O2 -I ."
+
+SRCDIR=./$TARGET
+DSTDIR=./crypto_${ALGOTYPE}/$TARGET/$IMPL
+BUILDDIR=./bin
+
+mkdir --parent $BUILDDIR
+
+case $ALGOTYPE in
+aead)
+	SUPERCOP_C_FILE=$DSTDIR/encrypt.c
+	;;
+*)
+	SUPERCOP_C_FILE=$DSTDIR/${ALGOTYPE}.c
+	;;
+esac
+
+#$TOOL -I $DSTDIR main_${ALGOTYPE}.c -o ${BUILDDIR}/${TARGET}_${ALGOTYPE}_${IMPL}
+$TOOL -I $DSTDIR genkat_${ALGOTYPE}.c ${SUPERCOP_C_FILE} -o ${BUILDDIR}/${TARGET}_genkat_${ALGOTYPE}_${IMPL}

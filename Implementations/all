@@ -1,0 +1,31 @@
+#!/bin/sh
+
+TOOL=./$1
+
+${TOOL} hash drygascon 128 ref
+${TOOL} hash drygascon 256 ref
+${TOOL} aead drygascon 128 ref
+${TOOL} aead drygascon 256 ref
+${TOOL} hash drygascon 128 le32
+${TOOL} hash drygascon 256 le32
+${TOOL} aead drygascon 128 le32
+${TOOL} aead drygascon 256 le32
+
+#removed because not compatible with key_set (it assumes xsize<=minkeysize)
+#${TOOL} hash drygasconp  128 ref
+#${TOOL} hash drygasconp  256 ref
+#${TOOL} aead drygasconp  128 ref
+#${TOOL} aead drygasconp  256 ref
+#${TOOL} hash drygasconp  128 le32
+#${TOOL} hash drygasconp  256 le32
+#${TOOL} aead drygasconp  128 le32
+#${TOOL} aead drygasconp  256 le32
+
+#${TOOL} hash drygasconx  128 ref
+#${TOOL} hash drygasconx  256 ref
+#${TOOL} aead drygasconx  128 ref
+#${TOOL} aead drygasconx  256 ref
+#${TOOL} hash drygasconx  128 le32
+#${TOOL} hash drygasconx  256 le32
+#${TOOL} aead drygasconx  128 le32
+#${TOOL} aead drygasconx  256 le32

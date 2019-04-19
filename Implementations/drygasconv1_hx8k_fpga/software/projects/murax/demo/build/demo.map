@@ -1,0 +1,192 @@
+
+Allocating common symbols
+Common symbol       size              file
+
+clen                0x4               build/src/main.o
+drygascon128_state  0x58              build/src/main.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+onChipRam        0x0000000080000000 0x0000000000001800
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+LOAD build/src/main.o
+LOAD build/src/crt.o
+LOAD build/src/drygascon128_riscv32e.o
+LOAD /opt/riscv/bin/../lib/gcc/riscv64-unknown-elf/7.2.0/rv32i/ilp32/libgcc.a
+                0x0000000000000200                _stack_size = DEFINED (_stack_size)?_stack_size:0x200
+                0x0000000000000000                _heap_size = DEFINED (_heap_size)?_heap_size:0x0
+
+.vector         0x0000000080000000      0x128
+ *crt.o(.text)
+ .text          0x0000000080000000      0x128 build/src/crt.o
+                0x0000000080000000                crtStart
+                0x0000000080000020                trap_entry
+
+.memory         0x0000000080000128      0xc94
+ *(.text)
+ .text          0x0000000080000128      0x518 build/src/main.o
+                0x000000008000017c                drygascon128_benchmark
+                0x00000000800001dc                memcpy
+                0x0000000080000200                memcmp
+                0x0000000080000234                memset
+                0x0000000080000250                nibble_to_hexstr
+                0x0000000080000274                u8_to_hexstr
+                0x00000000800002b0                bin_to_hexstr
+                0x0000000080000304                u32_to_hexstr
+                0x0000000080000360                benchmark
+                0x0000000080000424                test_drygascon128_g
+                0x0000000080000500                test_drygascon128_f
+                0x000000008000063c                irqCallback
+ .text          0x0000000080000640      0x77c build/src/drygascon128_riscv32e.o
+                0x0000000080000640                drygascon128_g
+                0x00000000800009a8                drygascon128_f
+                0x0000000080000dbc                end = .
+
+.text.startup   0x0000000080000dbc      0x518
+ .text.startup  0x0000000080000dbc      0x518 build/src/main.o
+                0x0000000080000dbc                main
+
+.rodata         0x00000000800012e0      0x1f0
+ *(.rdata)
+ *(.rodata .rodata.*)
+ .rodata        0x00000000800012e0      0x1d8 build/src/main.o
+                0x00000000800013c8                drygascon128_benchmark5_expected
+                0x0000000080001428                drygascon128_nonce
+                0x0000000080001438                drygascon128_key
+                0x0000000080001470                drygascon128_key_state
+ *fill*         0x00000000800014b8        0x8 
+ .rodata        0x00000000800014c0       0x10 build/src/drygascon128_riscv32e.o
+ *(.gnu.linkonce.r.*)
+
+.rela.dyn       0x00000000800014d0        0x0
+ .rela.text     0x00000000800014d0        0x0 build/src/main.o
+ .rela.text.startup
+                0x00000000800014d0        0x0 build/src/main.o
+ .rela.sdata    0x00000000800014d0        0x0 build/src/main.o
+
+.ctors          0x00000000800014d0        0x0
+                0x00000000800014d0                . = ALIGN (0x4)
+                0x00000000800014d0                _ctors_start = .
+ *(.init_array*)
+ *(SORT(.ctors.*))
+ *(.ctors)
+                0x00000000800014d0                . = ALIGN (0x4)
+                0x00000000800014d0                _ctors_end = .
+
+.data           0x00000000800014d0       0x10
+ *(.rdata)
+ *(.rodata .rodata.*)
+ *(.gnu.linkonce.r.*)
+ *(.data .data.*)
+ .data          0x00000000800014d0        0x0 build/src/main.o
+ .data          0x00000000800014d0        0x0 build/src/crt.o
+ .data          0x00000000800014d0        0x0 build/src/drygascon128_riscv32e.o
+ *(.gnu.linkonce.d.*)
+                0x00000000800014d0                . = ALIGN (0x8)
+                0x0000000080001cd0                PROVIDE (__global_pointer$, (. + 0x800))
+ *(.sdata .sdata.*)
+ .sdata         0x00000000800014d0        0xc build/src/main.o
+                0x00000000800014d0                drygascon128_state32
+                0x00000000800014d4                drygascon128_state8
+                0x00000000800014d8                min_time
+ *(.gnu.linkonce.s.*)
+                0x00000000800014e0                . = ALIGN (0x8)
+ *fill*         0x00000000800014dc        0x4 
+ *(.srodata.cst16)
+ *(.srodata.cst8)
+ *(.srodata.cst4)
+ *(.srodata.cst2)
+ *(.srodata .srodata.*)
+
+.bss            0x00000000800014e0       0xc8
+                0x00000000800014e0                . = ALIGN (0x4)
+                0x00000000800014e0                _bss_start = .
+ *(.sbss*)
+ .sbss          0x00000000800014e0        0x4 build/src/main.o
+                0x00000000800014e0                max_time
+ *(.gnu.linkonce.sb.*)
+ *(.bss .bss.*)
+ *fill*         0x00000000800014e4        0x4 
+ .bss           0x00000000800014e8       0x60 build/src/main.o
+                0x00000000800014e8                io
+ .bss           0x0000000080001548        0x0 build/src/crt.o
+ .bss           0x0000000080001548        0x0 build/src/drygascon128_riscv32e.o
+ *(.gnu.linkonce.b.*)
+ *(COMMON)
+ COMMON         0x0000000080001548       0x60 build/src/main.o
+                0x0000000080001548                clen
+                0x0000000080001550                drygascon128_state
+                0x00000000800015a8                . = ALIGN (0x4)
+                0x00000000800015a8                _bss_end = .
+
+.noinit         0x00000000800015a8        0x0
+                0x00000000800015a8                . = ALIGN (0x4)
+ *(.noinit .noinit.*)
+                0x00000000800015a8                . = ALIGN (0x4)
+
+._user_heap     0x00000000800015a8        0x0
+                0x00000000800015a8                . = ALIGN (0x8)
+                [!provide]                        PROVIDE (end, .)
+                [!provide]                        PROVIDE (_end, .)
+                [!provide]                        PROVIDE (_heap_start, .)
+                0x00000000800015a8                . = (. + _heap_size)
+                0x00000000800015a8                . = ALIGN (0x8)
+                [!provide]                        PROVIDE (_heap_end, .)
+
+._stack         0x00000000800015a8      0x208
+                0x00000000800015b0                . = ALIGN (0x10)
+ *fill*         0x00000000800015a8        0x8 
+                [!provide]                        PROVIDE (_stack_end, .)
+                0x00000000800017b0                . = (. + _stack_size)
+ *fill*         0x00000000800015b0      0x200 
+                0x00000000800017b0                . = ALIGN (0x10)
+                0x00000000800017b0                PROVIDE (_stack_start, .)
+OUTPUT(build/demo.elf elf32-littleriscv)
+
+.debug_info     0x0000000000000000     0x1f49
+ .debug_info    0x0000000000000000     0x1efd build/src/main.o
+ .debug_info    0x0000000000001efd       0x26 build/src/crt.o
+ .debug_info    0x0000000000001f23       0x26 build/src/drygascon128_riscv32e.o
+
+.debug_abbrev   0x0000000000000000      0x4d8
+ .debug_abbrev  0x0000000000000000      0x4b0 build/src/main.o
+ .debug_abbrev  0x00000000000004b0       0x14 build/src/crt.o
+ .debug_abbrev  0x00000000000004c4       0x14 build/src/drygascon128_riscv32e.o
+
+.debug_loc      0x0000000000000000      0xf25
+ .debug_loc     0x0000000000000000      0xf25 build/src/main.o
+
+.debug_aranges  0x0000000000000000       0x68
+ .debug_aranges
+                0x0000000000000000       0x28 build/src/main.o
+ .debug_aranges
+                0x0000000000000028       0x20 build/src/crt.o
+ .debug_aranges
+                0x0000000000000048       0x20 build/src/drygascon128_riscv32e.o
+
+.debug_ranges   0x0000000000000000      0x2f0
+ .debug_ranges  0x0000000000000000      0x2f0 build/src/main.o
+
+.debug_line     0x0000000000000000     0x181b
+ .debug_line    0x0000000000000000      0xad6 build/src/main.o
+ .debug_line    0x0000000000000ad6      0x1d0 build/src/crt.o
+ .debug_line    0x0000000000000ca6      0xb75 build/src/drygascon128_riscv32e.o
+
+.debug_str      0x0000000000000000      0x8ba
+ .debug_str     0x0000000000000000      0x888 build/src/main.o
+                                        0x941 (size before relaxing)
+ .debug_str     0x0000000000000888       0x16 build/src/crt.o
+                                         0x53 (size before relaxing)
+ .debug_str     0x000000000000089e       0x1c build/src/drygascon128_riscv32e.o
+                                         0x65 (size before relaxing)
+
+.comment        0x0000000000000000       0x11
+ .comment       0x0000000000000000       0x11 build/src/main.o
+                                         0x12 (size before relaxing)
+
+.debug_frame    0x0000000000000000      0x1dc
+ .debug_frame   0x0000000000000000      0x1dc build/src/main.o
