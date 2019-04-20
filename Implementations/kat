@@ -1,0 +1,26 @@
+#!/bin/sh
+
+#run ONE combination of target, implementation and algorithm
+
+#TARGET="drygascon5"
+#IMPL="ref"
+#ALGOTYPE="hash"
+
+ALGOTYPE=$1
+TARGETBASE=$2
+PARAM=$3
+IMPL=$4
+
+TARGET=${TARGETBASE}$PARAM
+
+BINDIR=../bin
+OUTDIR=./kat_out/${TARGET}/${ALGOTYPE}/${IMPL}
+TMPDIR=./tmp
+
+rm -rf ${TMPDIR}
+mkdir --parent $OUTDIR
+mkdir --parent $TMPDIR
+
+cd $TMPDIR
+${BINDIR}/${TARGET}_genkat_${ALGOTYPE}_${IMPL}
+cp * ../${OUTDIR}

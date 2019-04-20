@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+import subprocess
+import sys
+import binascii
+
+def call(binaryPath, target, impl):
+    cmd = binaryPath+" "+ target + " " + impl
+    print(cmd)
+    out = subprocess.check_output(
+        cmd,
+        stderr=subprocess.STDOUT,
+        shell=True)
+    return (cmd,out)
+
+for algo in ['aead','hash']:
+    for impl in ["ref", "le32"]:
+        for target in ['drygascon']:
+            for param in ['128','256']:
+                (cmd,out) = call("./check_%s"%(algo),"%s%s"%(target,param),impl)

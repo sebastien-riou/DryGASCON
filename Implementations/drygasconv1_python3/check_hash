@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+import subprocess
+import sys
+import binascii
+#from drysponge.drygascon import DryGascon
+#from drysponge.base import DrySponge
+#impl = DryGAscon().instance()
+
+def call(binaryPath, messageBytes):
+    out = subprocess.check_output(
+        binaryPath+" "+binascii.hexlify(messageBytes).decode("utf-8") ,
+        stderr=subprocess.STDOUT,
+        shell=True)
+    return out
+
+if len(sys.argv) != 3:
+    print("Need exactly two argument: the name of the instance and the name of the implementation")
+    exit(-1)
+instance_name = sys.argv[1]
+impl_name = sys.argv[2]
+
+messageBytes = binascii.unhexlify(b'')
+for i in range(0,256):
+    #out = subprocess.call(["./aesponge_hash", binascii.hexlify(messageBytes)])
+    #print(out)
+    #print(binascii.hexlify(messageBytes))
+    c_out = call("../bin/%s_hash_%s"%(instance_name,impl_name), messageBytes)
+    c_out = c_out[:-1].decode("utf-8")
+    #py_out = c_out
+    py_out = call("./%s_hash"%instance_name, messageBytes)
+    py_out = py_out[:-1].decode("utf-8")
+    #py_out = DrySponge.bytes_as_hex(impl.hash(messageBytes))
+
+    #if py_out != c_out.decode("utf-8"):
+    if py_out != c_out:
+        print("ERROR: mismatch between Python and C implementation")
+        print("messageBytes: ",binascii.hexlify(messageBytes).decode("utf-8"))
+        print("Python: ",py_out)
+        print("C:      ",c_out)
+        exit(-1)
+
+    print(py_out)
+
+    messageBytes += (i%256).to_bytes(1,'little')

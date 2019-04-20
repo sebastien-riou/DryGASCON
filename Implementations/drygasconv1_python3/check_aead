@@ -1,0 +1,113 @@
+#!/usr/bin/env python3
+import subprocess
+import sys
+import binascii
+
+def call(binaryPath, op, key, nonce, message, ad):
+    if len(message):
+        message = binascii.hexlify(message).decode("utf-8")
+    else:
+        message = "''"
+    if len(ad):
+        ad = binascii.hexlify(ad).decode("utf-8")
+    else:
+        ad = "''"
+    cmd = binaryPath+" "+ op + " " + key + " " + nonce + " " + message+" "+ad
+    #print(cmd)
+    try:
+        out = subprocess.check_output(
+            cmd,
+            stderr=subprocess.STDOUT,
+            shell=True)
+        return (cmd,out)
+    except:
+        return (cmd,None)
+
+if (len(sys.argv) < 3) | (len(sys.argv) > 5):
+    print("""Need two to four argument:
+ - the name of the instance
+ - the name of the implementation
+ - key size in bytes
+ - nonce size in bytes""")
+    exit(-1)
+
+instance_name = sys.argv[1]
+impl_name = sys.argv[2]
+
+(cmd,info) = call("../bin/%s_aead_%s"%(instance_name,impl_name), "i", "", "", "", "")
+info = info.decode("utf-8")
+info = info.split()
+
+if len(sys.argv) < 4:
+    key_size = int(info[0])
+    key_max_size = int(info[3])
+else:
+    key_size = int(sys.argv[3])
+    key_max_size = key_size
+
+if len(sys.argv) < 5:
+    nonce_size = int(info[1])
+else:
+    nonce_size = int(sys.argv[4])
+
+full_key = "6F1CCABA4D060ABFB470EEB4E7ADC213299501EDBC6E29BBCC412932D61AC7A9303F36483A697E368C603BE9E1B9EA32933B8ED6FC479F17EF821A33C69A93594E9DBC7FE4557AD08319E75454EFE6E138783B0CCCEFDE73D83074A42085B5EEF80BA0D8A5DEE2D18F52B4EA67E62DAA7ED46FDF1F76CD435770C480059548441A500B6AF15495B3E65740"
+nonce = "6873C8555B0BE7B123898EB60160C2818A50D9C2B30337D90FCCC24B731527B7"
+
+key = full_key[0:key_size*2]
+nonce = nonce[0:nonce_size*2]
+
+def test(key,nonce,message,ad):
+    (c_cmd,c_out) = call("../bin/%s_aead_%s"%(instance_name,impl_name), "t", key, nonce, message, ad)
+    (py_cmd,py_out) = call("./%s_aead"%instance_name, "t", key, nonce, message, ad)
+
+    if py_out != c_out:
+        print("ERROR: mismatch between Python and C implementation")
+        print(py_cmd)
+        print(c_cmd)
+        print("message: ",binascii.hexlify(message).decode("utf-8"))
+        print("associated data: ",binascii.hexlify(ad).decode("utf-8"))
+        if py_out is None:
+            print("Python:  exception")
+        else:
+            print("Python: ",py_out.decode("utf-8"),end="")
+        if c_out is None:
+            print("C:       exception")
+        else:
+            print("C:      ",c_out.decode("utf-8"),end="")
+        exit(-1)
+
+    if c_out is None:
+        assert(py_out is None)
+        print("Exception in C and Python. Lengths: key=%d, nonce=%d, message=%d, ad=%d"%(len(key)/2,len(nonce)/2,len(message)/2,len(ad)/2))
+    else:
+        assert(py_out is not None)
+        print(py_out.decode("utf-8"),end="")
+
+message = binascii.unhexlify(b'')
+ad = binascii.unhexlify(b'')
+
+for kl in range(key_size,key_max_size):
+    key = "00"*kl
+    test(key,nonce,message,ad)
+
+
+for kl in range(key_size,key_max_size):
+    key = full_key[0:kl*2]
+    #print(kl)
+    test(key,nonce,message,ad)
+
+
+key = full_key[0:key_size*2]
+
+for i in range(0,16):
+    ad = binascii.unhexlify(b'')
+    for j in range(0,16):
+        test(key,nonce,message,ad)
+
+        ad += (((j+11)*19)%256).to_bytes(1,'little')
+        if i > 5:
+            ad += (((j+11)*19)%256).to_bytes(1,'little')*4
+
+    message += (((i+13)*17)%256).to_bytes(1,'little')
+    if i > 8:
+        message += (((i+13)*17)%256).to_bytes(1,'little')*16
