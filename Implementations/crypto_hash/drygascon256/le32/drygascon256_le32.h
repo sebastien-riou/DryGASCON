@@ -7,7 +7,7 @@ c99 ref implementation meant to fit in the supercop framework
 #define __DRYGASCON256_H__
 
 #define DRYSPONGE_DBG_EN 0
-
+#define DRYSPONGE_ACCUMULATE_SAFE_AND_SLOW
 #define DRYSPONGE_KEYSIZE 32
 #define DRYSPONGE_NONCESIZE 16
 #define DRYSPONGE_BLOCKSIZE 16

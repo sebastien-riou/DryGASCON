@@ -281,8 +281,8 @@ always @(posedge clk) begin
                     cnt <= absorb ? {{3{1'b0}},1'b1} : cnt +1'b1;
                 end
             end
-            default: begin
-            end
+            //default: begin
+            //end
             endcase
         end
     end

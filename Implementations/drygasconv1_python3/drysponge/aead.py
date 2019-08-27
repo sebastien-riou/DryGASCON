@@ -4,7 +4,7 @@ def aead(impl):
     import sys
     import binascii
 
-    if (len(sys.argv) > 7) | (len(sys.argv) < 6):
+    if (len(sys.argv) > 8) | (len(sys.argv) < 6):
         print("ERROR: need at least 5 arguments: operation,key,nonce,message,associatedData,[staticData],[verbosity]")
         exit()
     op = sys.argv[1]
@@ -14,16 +14,17 @@ def aead(impl):
     associatedData = binascii.unhexlify(sys.argv[5])
     staticData = None
     verbosityIdx = None
-    if len(sys.argv) >= 7 :
+    if len(sys.argv) > 6 :
         if len(sys.argv[6]) > 1:
             staticData = binascii.unhexlify(sys.argv[6])
         else:
+            assert(len(sys.argv) == 7)
             verbosityIdx = 6
     if len(sys.argv) == 8 :
         assert(verbosityIdx is None)
         verbosityIdx = 7
     if verbosityIdx is not None:
-        impl.Verbose(int(verbosityIdx))
+        impl.Verbose(int(sys.argv[verbosityIdx]))
     if op in ['e','enc','encrypt']:
         out = impl.encrypt(key,nonce,message,associatedData,staticData)
     elif op in ['d','dec','decreypt']:
