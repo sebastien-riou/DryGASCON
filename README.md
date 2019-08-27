@@ -1,5 +1,7 @@
 # DryGASCON
-Submission to NIST lightweight crypto competition
+Submission to NIST lightweight crypto competition (https://csrc.nist.gov/Projects/Lightweight-Cryptography/round-1-candidates)
+
+Official specification: https://csrc.nist.gov/CSRC/media/Projects/Lightweight-Cryptography/documents/round-1/spec-doc/drygascon-spec.pdf
 
 This repository contains:
 * the same files as the official submission
