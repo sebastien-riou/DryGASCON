@@ -34,7 +34,7 @@ memset (void *dest, int val, size_t len)
 }
 
 
-#include <murax.h>
+#include "murax.h"
 #include "drysponge.h"
 //#include "bytes_utils.h"
 
@@ -232,27 +232,19 @@ void main() {
 	uint32_t t0,t1,tref;
 	char buf[10] = {0};
 
-
 	interruptCtrl_init(TIMER_INTERRUPT);
 	prescaler_init(TIMER_PRESCALER);
 	timer_init(TIMER_A);
 
-	//TIMER_PRESCALER->LIMIT = 12000-1; //1 ms rate
 	TIMER_PRESCALER->LIMIT = 0;
 
-	//TIMER_A->LIMIT = 1000-1;  //1 second rate
 	TIMER_A->LIMIT = 0xFFFFFFFF;
-	//TIMER_A->CLEARS_TICKS = 0x00010002;
 	TIMER_A->CLEARS_TICKS = 1;//bypass prescaler, no auto-clear
-
-	//TIMER_INTERRUPT->PENDINGS = 0xF;
-	//TIMER_INTERRUPT->MASKS = 0x1;
 
 	GPIO_A->OUTPUT_ENABLE = 0x000000FF;
 	GPIO_A->OUTPUT = 0x000000F0;
 
-	//UART->STATUS = 2; //Enable RX interrupts
-	UART->DATA = 'A';
+	UART->DATA = 'B';
 	uint32_t res = drygascon128hw_test_ctrl(DRYGASCON128);
 	u32_to_hexstr(buf,res);
 	for(unsigned int i=0;i<8;i++){
@@ -266,7 +258,6 @@ void main() {
 	uart_write(UART,'K');
 	uart_write(UART,'\n');
 
-
 	for(unsigned int i=0;i<3;i++){
 		GPIO_A->OUTPUT = ((GPIO_A->OUTPUT + 1) & 0xFF);  //Counter on LED[7:0]
 		a++;
@@ -274,7 +265,6 @@ void main() {
 		min_time=0xFFFFFFFF;
 		max_time=0;
 		benchmark(drygascon128_benchmark);
-		//test_drygascon128_g();
 		u32_to_hexstr(buf,min_time);
 		for(unsigned int i=0;i<8;i++){
 			uart_write(UART,buf[i]);
@@ -303,19 +293,18 @@ void main() {
 		uart_read(UART,&ds);
 		GPIO_A->OUTPUT = ((GPIO_A->OUTPUT + 1) & 0xFF);  //Counter on LED[7:0]
 		a++;
-		if(ds & 0xF0){
-			//invalid domain separator, go to transmission less mode
-			break;
-		}
 		drygascon128hw_set_c(DRYGASCON128,drygascon128_state32);
 		drygascon128hw_set_x(DRYGASCON128,drygascon128_state32+10+4);
 		drygascon128hw_set_io(DRYGASCON128,drygascon128_state32+10);
+        if(ds & 0xF0){
+			//invalid domain separator, go to transmission less mode
+			break;
+		}
 		drygascon128hw_f(DRYGASCON128,drygascon128_state32+10,drygascon128_state32+10,ds,7);
 		drygascon128hw_get_c(DRYGASCON128,drygascon128_state32);
 		for(unsigned int i=0;i<16;i++){
 			uart_write(UART,drygascon128_state8[40+i]);
 		}
-
 	}
 	uint32_t leds=0;
 	while(1){//transmission less attack loop: next input = F(input) (DS=0, rounds=7)
@@ -323,21 +312,9 @@ void main() {
 		GPIO_A->OUTPUT = 1|((leds>>6) & 0xFF);//force lsb to 1 to have clean trigger
 		drygascon128hw_f(DRYGASCON128,drygascon128_state32+10,drygascon128_state32+10,0,7);
 		GPIO_A->OUTPUT = 0;
-		//GPIO_A->OUTPUT = 1;
-		//GPIO_A->OUTPUT = 0;
 		leds++;
 	}
 }
 
 void irqCallback(){
-	/*if(TIMER_INTERRUPT->PENDINGS & 1){  //Timer A interrupt
-		GPIO_A->OUTPUT ^= 0x80; //Toogle led 7
-		TIMER_INTERRUPT->PENDINGS = 1;
-	}
-	while(UART->STATUS & (1 << 9)){ //UART RX interrupt
-		UART->DATA = (UART->DATA) & 0xFF;
-	}*/
 }
-
-
-

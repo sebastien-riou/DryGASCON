@@ -176,13 +176,13 @@ OUTPUT(build/demo.elf elf32-littleriscv)
  .debug_line    0x0000000000000ad6      0x1d0 build/src/crt.o
  .debug_line    0x0000000000000ca6      0xb75 build/src/drygascon128_riscv32e.o
 
-.debug_str      0x0000000000000000      0x8ba
- .debug_str     0x0000000000000000      0x888 build/src/main.o
-                                        0x941 (size before relaxing)
- .debug_str     0x0000000000000888       0x16 build/src/crt.o
-                                         0x53 (size before relaxing)
- .debug_str     0x000000000000089e       0x1c build/src/drygascon128_riscv32e.o
-                                         0x65 (size before relaxing)
+.debug_str      0x0000000000000000      0x8bd
+ .debug_str     0x0000000000000000      0x88b build/src/main.o
+                                        0x944 (size before relaxing)
+ .debug_str     0x000000000000088b       0x16 build/src/crt.o
+                                         0x56 (size before relaxing)
+ .debug_str     0x00000000000008a1       0x1c build/src/drygascon128_riscv32e.o
+                                         0x68 (size before relaxing)
 
 .comment        0x0000000000000000       0x11
  .comment       0x0000000000000000       0x11 build/src/main.o

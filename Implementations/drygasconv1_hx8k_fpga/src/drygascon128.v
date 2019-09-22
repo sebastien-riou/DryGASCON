@@ -1,5 +1,8 @@
+//Configuration flags: "ACC_PIPE MIX_SHIFT_REG"
+
 `timescale 1ns / 1ps
 `default_nettype none
+
 
 module birotr(
     input wire [64-1:0] din,
@@ -22,8 +25,8 @@ end
 endmodule
 
 module gascon5_round(
-    input [320-1:0] din,
-    input [4-1:0] round,
+    input wire [320-1:0] din,
+    input wire [4-1:0] round,
     output reg [320-1:0] out
     );
 wire [5*6-1:0] rot_lut0 = {6'd07,6'd10,6'd01,6'd61,6'd19};
@@ -193,8 +196,6 @@ end
 
 localparam D_WIDTH = C_QWORDS*XIDX_WIDTH;
 localparam MIX_ROUNDS = (R_WIDTH+4+D_WIDTH-1)/D_WIDTH;
-localparam MIX_I_PAD = D_WIDTH*MIX_ROUNDS - R_WIDTH+4;
-reg [D_WIDTH*MIX_ROUNDS-1:0] mix_i;
 reg [D_WIDTH-1:0] d;
 wire [C_WIDTH-1:0] mixsx32_out;
 reg [C_WIDTH-1:0] core_in;
@@ -202,18 +203,17 @@ reg [3:0] core_round;
 wire [C_WIDTH-1:0] core_out;
 wire [128-1:0] accu_out;
 
-always @* mix_i = {{MIX_I_PAD{1'b0}},ds,r};
-always @* d = mix_i[cnt*D_WIDTH+:D_WIDTH];
 mixsx32 u_mixsx32(.out(mixsx32_out), .c(c), .x(x), .d(d));
 always @* core_in = absorb ? mixsx32_out : c;
 always @* core_round = absorb ? {4{1'b0}} : cnt;
 gascon5_round u_gascon5_round(.out(core_out), .din(core_in), .round(core_round));
-accumulate u_accumulate(.out(accu_out), .din(core_out[0+:256]), .r(r));
+accumulate u_accumulate(.out(accu_out), .din(c[0+:256]), .r(r));
 
 localparam STATE_WIDTH = 2;
 localparam STATE_IDLE = 2'b00;
 localparam STATE_MIX_ENTRY = 2'b01;
 localparam STATE_G_ENTRY = 2'b10;
+localparam STATE_G_EXIT = 2'b11;
 reg [STATE_WIDTH-1:0] state;
 
 always @(posedge clk) begin
@@ -244,6 +244,8 @@ always @(posedge clk) begin
                 if(start) begin
                     if(absorb) begin
                         state <= STATE_MIX_ENTRY;
+                        d <= r[0+:D_WIDTH];
+                        r <= {{D_WIDTH-4{1'b0}},ds,r[D_WIDTH+:R_WIDTH-D_WIDTH]};
                     end else begin
                         r <= {R_WIDTH{1'b0}};
                         state <= STATE_G_ENTRY;
@@ -253,6 +255,8 @@ always @(posedge clk) begin
                 end
             end
             STATE_MIX_ENTRY: begin
+                d <= r[0+:D_WIDTH];
+                r <= {{D_WIDTH{1'b0}},r[D_WIDTH+:R_WIDTH-D_WIDTH]};
                 c <= core_out;
                 if(MIX_ROUNDS-2==cnt) begin
                     r <= {R_WIDTH{1'b0}};
@@ -269,14 +273,20 @@ always @(posedge clk) begin
                 //$display("accu_out: %X",int128_to_le(accu_out));
                 absorb <= 1'b0;
                 c <= core_out;
-                r <= accu_out;
+                if(!absorb && (cnt >= 1)) r <= accu_out;
                 if(rounds-1==cnt) begin
                     cnt <= {4{1'b0}};
-                    state <= STATE_IDLE;
-                    idle <= 1'b1;
+                    state <= STATE_G_EXIT;
                 end else begin
                     cnt <= absorb ? {{3{1'b0}},1'b1} : cnt +1'b1;
                 end
+            end
+            STATE_G_EXIT: begin
+                r <= accu_out;
+                state <= STATE_IDLE;
+                idle <= 1'b1;
+            end
+            default: begin
             end
             endcase
         end

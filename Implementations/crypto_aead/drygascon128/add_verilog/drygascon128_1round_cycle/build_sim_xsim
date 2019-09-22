@@ -1,0 +1,8 @@
+#!/bin/sh
+
+PATH=/opt/Xilinx/Vivado/2018.3/bin:$PATH
+
+mkdir -p xsim
+cd xsim
+
+../xsim.py --top tb_drygascon128 --src ../tb_drygascon128.v --src ../drygascon128.v --log ../xsim.log
