@@ -3,6 +3,10 @@ Submission to NIST lightweight crypto competition (https://csrc.nist.gov/Project
 
 Official specification: https://csrc.nist.gov/CSRC/media/Projects/lightweight-cryptography/documents/round-2/spec-doc-rnd2/drygascon-spec-round2.pdf
 
+An independent implementation: https://github.com/rweather/lightweight-crypto/tree/master/src/individual/DryGASCON
+
+Benchmark of software implementations: https://lwc.las3.de
+
 This repository contains:
 * the same files as the official submission
 * additional files such as build scripts and presentations
