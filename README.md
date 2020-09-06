@@ -1,9 +1,11 @@
 # DryGASCON
-Submission to NIST lightweight crypto competition (https://csrc.nist.gov/Projects/Lightweight-Cryptography/round-2-candidates)
+DryGASCON is an AEAD and hash algorithm submitted to [NIST lightweight crypto competition](https://csrc.nist.gov/Projects/Lightweight-Cryptography/round-2-candidates)
 
-Official specification: https://csrc.nist.gov/CSRC/media/Projects/lightweight-cryptography/documents/round-2/spec-doc-rnd2/drygascon-spec-round2.pdf
+The [official specification](https://csrc.nist.gov/CSRC/media/Projects/lightweight-cryptography/documents/round-2/spec-doc-rnd2/drygascon-spec-round2.pdf) is hosted by NIST.
 
-An independent implementation: https://github.com/rweather/lightweight-crypto/tree/master/src/individual/DryGASCON
+This repository contains several hardware and software implementation. You can find also other implementations on other repositories:
+* Rhys Weatherley's [pure C and AVR](https://github.com/rweather/lightweight-crypto/tree/master/src/individual/DryGASCON) implementations supports AEAD and hash.
+* Ekawat 'Ice' Homsirikamol's [VHDL / Verilog](https://github.com/sebastien-riou/DryGASCON-LWC-API) implementation supports AEAD and hash, follows the [LWC hardware API](https://cryptography.gmu.edu/athena/index.php?id=LWC)
 
 Benchmark of software implementations: https://lwc.las3.de
 
