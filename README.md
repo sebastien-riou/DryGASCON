@@ -10,7 +10,7 @@ This repository contains several hardware and software implementation. You can f
 Benchmark of software implementations: https://lwc.las3.de
 
 This repository contains:
-* the same files as the official submission
+* updated files compared to the official submission
 * additional files such as build scripts and presentations
 
 ## Cryptanalysis challenges
