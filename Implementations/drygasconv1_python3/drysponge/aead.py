@@ -6,6 +6,20 @@ def aead(impl):
 
     if (len(sys.argv) > 8) | (len(sys.argv) < 6):
         print("ERROR: need at least 5 arguments: operation,key,nonce,message,associatedData,[staticData],[verbosity]")
+        print("""
+operation:
+    e,enc,encrypt
+    d,dec,decrypt
+
+verbosity: from 0 to 5
+
+examples:
+    no message, no associated data: e 000102030405060708090A0B0C0D0E0F 000102030405060708090A0B0C0D0E0F "" ""
+    message, no associated data:    e 000102030405060708090A0B0C0D0E0F 000102030405060708090A0B0C0D0E0F "AABB" ""
+    no message, associated data:    e 000102030405060708090A0B0C0D0E0F 000102030405060708090A0B0C0D0E0F "" "AABB"
+    message and associated data:    e 000102030405060708090A0B0C0D0E0F 000102030405060708090A0B0C0D0E0F "AABB" "CCDD"
+    same with verbose output:       e 000102030405060708090A0B0C0D0E0F 000102030405060708090A0B0C0D0E0F "AABB" "CCDD" 2
+        """)
         exit()
     op = sys.argv[1]
     key = binascii.unhexlify(sys.argv[2])
@@ -27,7 +41,7 @@ def aead(impl):
         impl.Verbose(int(sys.argv[verbosityIdx]))
     if op in ['e','enc','encrypt']:
         out = impl.encrypt(key,nonce,message,associatedData,staticData)
-    elif op in ['d','dec','decreypt']:
+    elif op in ['d','dec','decrypt']:
         out = impl.decrypt(key,nonce,message,associatedData,staticData)
     else:
         out = impl.encrypt(key,nonce,message,associatedData,staticData)

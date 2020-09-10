@@ -429,6 +429,13 @@ if __name__ == "__main__":
             print("%02x\t"%(r),end="")
         print()
 
+    def gen_bin_table(sbox):
+        nw = get_sbox_size(sbox)
+        for i in range(0,1<<nw):
+            r=sbox(i)
+            print("{0:0{width}b} --> {1:0{width}b}".format(i,r,width=nw))
+        print()
+
     def test_cycle(nw):
         s=0
         cnt=0
@@ -559,14 +566,15 @@ if __name__ == "__main__":
     #    gen_latex_ref_table(nw)
     #    test_bijectivity(nw)
     #test_nw7_equations()
-    #test_nw5_equations()
+    test_nw5_equations()
     nw=9
     #gen_latex_ref_table(nw)
     #print(table_to_svg_colored(delta_table(sbox_nw5_equations,5)))
     #gen_raw_table(sbox9)
+    gen_bin_table(sbox_nw5_equations)
     #print(diff_branch_number(sbox_nw7_equations))
     #print(sub_zeros(table_to_latex(correlation_coef_table(sbox_nw5_equations))))
     #print(table_to_svg_colored(correlation_coef_table(sbox9)))
-    print(table_to_svg_colored(delta_table(sbox9,9)))
+    #print(table_to_svg_colored(delta_table(sbox9,9)))
     #print(diff_branch_number(sbox_nw7_equations))
         #test_cycle(nw)

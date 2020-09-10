@@ -65,16 +65,28 @@ class DryGascon(object):
             ii |= ds << (len(ib)*8)
             #print("%x"%ii)
         r=(ii>>biti) & self.MprInputMask
-        #print("biti=%d, r=0x%x"%(biti,r))
+        if self.spy:
+            print("biti=%d, r=0x%x"%(biti,r))
         for j in range(0,self.CapacityWidth // 64):
             wi = 0
             #wi = r  & 1
             #r = r >> 1
             i = r & self.XIdxMask
             r = r>>self.XIdxWidth
+            ci=((j*2)+wi)
+            xi=i
+            if self.spy:
+                print("c[%d]^=x[%d]: c[%d]="%(ci,xi,ci),end="")
+                DrySponge.print_bytes_as_hex(c[ci*4:ci*4+4],end="")
+                print(" ^ ",end="")
+                DrySponge.print_bytes_as_hex(x[xi*4:xi*4+4],end="")
             for k in range(0,4):
                 #print(i,j,k,j*4+k,i*4+k)
-                c[((j*2)+wi)*4+k] ^= x[i*4+k]
+                c[ci*4+k] ^= x[xi*4+k]
+            if self.spy:
+                print(" = ",end="")
+                DrySponge.print_bytes_as_hex(c[ci*4:ci*4+4])
+
         return (c,x)
 
     def MixPhase(self,c,x,i):
