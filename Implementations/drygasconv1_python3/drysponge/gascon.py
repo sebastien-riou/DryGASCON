@@ -561,7 +561,24 @@ if __name__ == "__main__":
     def sbox9(i):
         return Gascon.sbox(i,9)
 
+    def proba_key_second_iteration(width):
+        import math
+        sel_width = 4
+        all_diff = 1
+        for i in range(0,sel_width):
+            all_diff *= 2**width-i
+        key_space = 2 ** (4*width)
+        colision = key_space - all_diff
+        inv_proba = math.ceil(key_space/colision)
+        inv_proba_bits = inv_proba.bit_length()
+        print("width=%d, colision: %d (%d bits), all_diff keys: %d (%d bits), proba=2^-%d"%(width,colision, colision.bit_length(), all_diff,all_diff.bit_length(),inv_proba_bits))
 
+
+    proba_key_second_iteration(2)
+    proba_key_second_iteration(4)
+    proba_key_second_iteration(8)
+    proba_key_second_iteration(16)
+    proba_key_second_iteration(32)
     #for nw in range(5,9,2):
     #    gen_latex_ref_table(nw)
     #    test_bijectivity(nw)

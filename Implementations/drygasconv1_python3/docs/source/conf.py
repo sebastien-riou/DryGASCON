@@ -71,6 +71,7 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.doctest',
               'sphinx_autodoc_typehints',
               'sphinx.ext.napoleon']
+
 templates_path = ['templates']
 source_suffix = '.rst'
 master_doc = 'index'
@@ -150,5 +151,5 @@ else:
 
 
 def setup(app):
-    app.add_stylesheet('https://fonts.googleapis.com/css?family=Raleway')
-    app.add_stylesheet('css/theme_overrides.css')
+    app.add_css_file('https://fonts.googleapis.com/css?family=Raleway')
+    app.add_css_file('css/theme_overrides.css')

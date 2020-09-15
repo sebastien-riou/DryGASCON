@@ -3,6 +3,8 @@
 # Convention:
 #  width means length in bits
 #  size means length in bytes
+#
+# version=2: changes in key setup for the minium key size of each security level
 import sys
 import binascii
 import os
@@ -27,6 +29,8 @@ class DrySponge(object):
         assert(0==(params.RateWidth%8))
         assert(0==(params.CapacityWidth%8))
         self.params = params
+        self.__Version = params.version
+        assert(self.__Version in [1,2])
         self.__VerboseLevel = 0
         self.__MinKeyWidth = params.MinKeyWidth
         self.__NonceWidth = params.NonceWidth
@@ -167,7 +171,7 @@ class DrySponge(object):
             s[a+i]=s[b+i]
             s[b+i]=tmp
 
-    def __set_key(self,key):
+    def __set_key_v1(self,key):
         minkeysize = self.__MinKeyWidth // 8;
         xsize = self.__XWidth//8
         xwords = self.__XWidth // 32
@@ -215,6 +219,57 @@ class DrySponge(object):
             for j in range(i+1,xwords):
                 assert(x[i*4:i*4+4] != x[j*4:j*4+4])
 
+    def __set_key_v2(self,key):
+        minkeysize = self.__MinKeyWidth // 8;
+        xsize = self.__XWidth//8
+        xwords = self.__XWidth // 32
+        csize = self.__CapacityWidth//8
+        midkeysize = minkeysize+xsize;
+        fullkeysize = csize+xsize
+        assert(len(key)>=minkeysize)
+        assert(len(key)<=fullkeysize)
+        k = copy.deepcopy(key)
+        if fullkeysize==len(key):
+            c=k[:csize]
+            x=k[csize:]
+        else:
+            c = copy.deepcopy(k[:minkeysize])
+            while len(c) < csize:
+                c += copy.deepcopy(c)
+            c=c[:csize]
+            if midkeysize==len(key):
+                x=k[minkeysize:]
+            else:
+                assert(minkeysize==len(key))
+                assert(len(key)>=xsize)
+                self.__set_c(c)
+                self.__print_state("   Key setup entry:",self.SPY_ROUND_IO)
+                x=self.__CoreRound(self.__c(),0)[:xsize]
+        assert(len(c)==csize)
+        assert(len(x)==xsize)
+        self.__set_c(c)
+        x = bytearray(x)
+        match=0
+        for i in range(0,xwords-1):
+            for j in range(i+1,xwords):
+                if x[i*4:i*4+4] == x[j*4:j*4+4]:
+                    match=1
+        mask = 0xFFFFFFFF << (match * xwords.bit_length())
+        for i in range(0,xwords):
+            xi = self.bytes_to_int(x[i*4:i*4+4])
+            xi = (xi & mask) | (i & ~mask)
+            x[i*4:i*4+4] = self.int_to_bytes(xi,32)
+        self.__set_x(x)
+        x = self.__x()
+        for i in range(0,xwords-1):
+            for j in range(i+1,xwords):
+                assert(x[i*4:i*4+4] != x[j*4:j*4+4])
+
+    def __set_key(self,key):
+        if self.__Version == 1:
+            self.__set_key_v1(key)
+        else:
+            self.__set_key_v2(key)
 
     def __g(self,caller_is_F=0):
         if 0==caller_is_F:

@@ -12,7 +12,7 @@ else:
     from drysponge.gascon import Gascon
 
 class DryGascon(object):
-    def __init__(self,key_min_width,nonce_width,rate_width,capacity_width,x_width,init_rounds,rounds,accumulate_factor=2):
+    def __init__(self,key_min_width,nonce_width,rate_width,capacity_width,x_width,init_rounds,rounds,accumulate_factor=2,version=1):
         assert(0==(capacity_width%64))
         self.nw = capacity_width // 64
         assert(1==(self.nw % 2))
@@ -40,14 +40,15 @@ class DryGascon(object):
         self.spy=False
         self.spy_all=False
         self.rounds = None
+        self.version=version
 
     @staticmethod
-    def DryGascon128():
-        return DryGascon(128,128,128,320,32*4,12-1,8-1,2)
+    def DryGascon128(version=1):
+        return DryGascon(128,128,128,320,32*4,12-1,8-1,2,version=version)
 
     @staticmethod
-    def DryGascon256():
-        return DryGascon(256,128,128,576,32*4,12,8,4)
+    def DryGascon256(version=1):
+        return DryGascon(256,128,128,576,32*4,12,8,4,version=version)
 
     def instance(self):
         return DrySponge(self)

@@ -1,0 +1,57 @@
+#!/bin/sh
+
+#build ONE combination of target, implementation and algorithm
+
+#TARGET="drygascon"
+#PARAM="5"
+#IMPL="ref"
+#ALGOTYPE="hash"
+
+#./build_arm aead drygascon 128 add_arm-cm0-las3
+
+if [ "$#" -ne 4 ]; then
+    echo "Illegal number of parameters"
+    echo "[aead|hash] target param impl"
+    exit 1
+fi
+
+ALGOTYPE=$1
+TARGETBASE=$2
+PARAM=$3
+IMPL=$4
+
+TARGET=${TARGETBASE}$PARAM
+
+C_FLAGS="-std=c99 -fPIC -I . -fstrict-aliasing -Wstrict-aliasing -fno-exceptions -fno-unwind-tables -ffunction-sections -fdata-sections -gstrict-dwarf"
+SMALL_FLAGS="-Os"
+FAST_FLAGS="-O3"
+
+CC=arm-none-eabi-gcc
+AR=arm-none-eabi-gcc-ar
+
+ARCH_FLAGS="-mthumb -mcpu=cortex-m0"
+CC_FLAGS="$C_FLAGS $ARCH_FLAGS"
+
+TOOL="$CC $CC_FLAGS $FAST_FLAGS"
+
+SRCDIR=./$TARGET
+DSTDIR=./crypto_${ALGOTYPE}/$TARGET/$IMPL
+BUILDDIR=./bin
+
+mkdir --parent $BUILDDIR
+
+case $ALGOTYPE in
+aead)
+	SUPERCOP_C_FILE=encrypt.c
+	;;
+*)
+	SUPERCOP_C_FILE=${ALGOTYPE}.c
+	;;
+esac
+
+rm -f ${BUILDDIR}/fg.o
+rm -f ${BUILDDIR}/encrypt.o
+
+$TOOL $DSTDIR/drygascon128_arm-cm0.S -c -o ${BUILDDIR}/fg.o
+$TOOL -I $DSTDIR $DSTDIR/encrypt.c -c -o ${BUILDDIR}/encrypt.o
+$AR rcs ${BUILDDIR}/libdrygascon128.a ${BUILDDIR}/encrypt.o ${BUILDDIR}/fg.o
