@@ -13,6 +13,10 @@ This repository contains:
 * updated files compared to the official submission
 * additional files such as build scripts and presentations
 
+Python3 package:
+* [read the docs page](https://drygascon.readthedocs.io/en/latest/): To use in your Python code
+* [pypi page](https://pypi.org/project/drysponge): Examples to use from command line
+
 ## Cryptanalysis challenges
 To encourage more analysis of DryGASCON, I offer the following challenges:
 Cryptanalysis Challenge: for each the reward is a full size bottle of chartreuse - DryGASCON-128 F function: how many rounds in G function can you break- DryGASCON-256 F function: same as above
