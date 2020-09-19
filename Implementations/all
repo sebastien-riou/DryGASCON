@@ -2,30 +2,20 @@
 
 TOOL=./$1
 
-${TOOL} hash drygascon 128 ref
-${TOOL} hash drygascon 256 ref
-${TOOL} aead drygascon 128 ref
-${TOOL} aead drygascon 256 ref
-${TOOL} hash drygascon 128 le32
-${TOOL} hash drygascon 256 le32
-${TOOL} aead drygascon 128 le32
-${TOOL} aead drygascon 256 le32
+${TOOL} aead drygascon 128 opt_arm_cortex-m 16
+${TOOL} aead drygascon 128 opt_arm_cortex-m 32
+${TOOL} aead drygascon 128 opt_arm_cortex-m 56
 
-#removed because not compatible with key_set (it assumes xsize<=minkeysize)
-#${TOOL} hash drygasconp  128 ref
-#${TOOL} hash drygasconp  256 ref
-#${TOOL} aead drygasconp  128 ref
-#${TOOL} aead drygasconp  256 ref
-#${TOOL} hash drygasconp  128 le32
-#${TOOL} hash drygasconp  256 le32
-#${TOOL} aead drygasconp  128 le32
-#${TOOL} aead drygasconp  256 le32
+${TOOL} hash drygascon 128 ref  16
+${TOOL} hash drygascon 256 ref  32
+${TOOL} aead drygascon 128 ref  16
+${TOOL} aead drygascon 256 ref  32
+${TOOL} hash drygascon 128 le32 16
+${TOOL} hash drygascon 256 le32 32
+${TOOL} aead drygascon 128 le32 16
+${TOOL} aead drygascon 256 le32 32
 
-#${TOOL} hash drygasconx  128 ref
-#${TOOL} hash drygasconx  256 ref
-#${TOOL} aead drygasconx  128 ref
-#${TOOL} aead drygasconx  256 ref
-#${TOOL} hash drygasconx  128 le32
-#${TOOL} hash drygasconx  256 le32
-#${TOOL} aead drygasconx  128 le32
-#${TOOL} aead drygasconx  256 le32
+${TOOL} aead drygascon 128 ref  32
+${TOOL} aead drygascon 128 le32 32
+${TOOL} aead drygascon 128 ref  56
+${TOOL} aead drygascon 128 le32 56

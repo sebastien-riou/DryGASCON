@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#check consistency between ref and le32 implementation of ONE combination of target and algorithm
+#check ONE combination of target and algorithm
 
 #TARGET="drygascon5"
 #ALGOTYPE="hash"
@@ -9,19 +9,20 @@ ALGOTYPE=$1
 TARGETBASE=$2
 PARAM=$3
 IMPL=$4
+KSIZE=$5
 
 TARGET=${TARGETBASE}$PARAM
 
-OUTDIR=./kat_out/${TARGET}/${ALGOTYPE}
+OUTDIR=./kat_out/${TARGET}k${KSIZE}/${ALGOTYPE}
 
 REF=$(ls $OUTDIR/ref)
 REF=$OUTDIR/ref/$REF
 
-LE32=$(ls $OUTDIR/le32)
-LE32=$OUTDIR/le32/$LE32
+OPT=$(ls $OUTDIR/$IMPL)
+OPT=$OUTDIR/$IMPL/$OPT
 
-diff -q $REF $LE32
+diff -q $REF $OPT
 if [ $? -eq 1 ]; then
     echo $OUTDIR
-    diff --side-by-side $REF $LE32 | head --lines=20
+    diff --side-by-side $REF $OPT | head --lines=20
 fi

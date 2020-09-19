@@ -2,25 +2,29 @@
 
 #build ONE combination of target, implementation and algorithm
 
+#ALGOTYPE="aead"
 #TARGET="drygascon"
-#PARAM="5"
-#IMPL="ref"
-#ALGOTYPE="hash"
+#PARAM="128"
+#CMNUM="7"
 
-#./build_arm aead drygascon 128 add_arm-cm0-las3
+#./build_arm aead drygascon 128 7
 
-if [ "$#" -ne 4 ]; then
+if [ "$#" -ne 5 ]; then
     echo "Illegal number of parameters"
-    echo "[aead|hash] target param impl"
+    echo "[aead|hash] target param cm-num key-size"
     exit 1
 fi
 
 ALGOTYPE=$1
 TARGETBASE=$2
 PARAM=$3
-IMPL=$4
+CMNUM=$4
+KSIZE=$5
 
-TARGET=${TARGETBASE}$PARAM
+API_H=api${KSIZE}.h
+ENC_C=encrypt${KSIZE}.c
+
+TARGET=${TARGETBASE}${PARAM}k${KSIZE}
 
 C_FLAGS="-std=c99 -fPIC -I . -fstrict-aliasing -Wstrict-aliasing -fno-exceptions -fno-unwind-tables -ffunction-sections -fdata-sections -gstrict-dwarf"
 SMALL_FLAGS="-Os"
@@ -29,17 +33,45 @@ FAST_FLAGS="-O3"
 CC=arm-none-eabi-gcc
 AR=arm-none-eabi-gcc-ar
 
-ARCH_FLAGS="-mthumb -mcpu=cortex-m0"
+CPU="cortex-m$CMNUM"
+case $CMNUM in
+7)
+	FPU="-mfloat-abi=hard -mfpu=fpv5-d16"
+    ARM_ARCH="v7m"
+    BENCHMARK="v7m_fpu"
+	;;
+4)
+	FPU="-mfloat-abi=hard -mfpu=fpv4-sp-d16"
+    ARM_ARCH="v7m"
+    BENCHMARK="v7m_fpu"
+	;;
+3)
+	FPU=""
+    ARM_ARCH="v7m"
+    BENCHMARK="v7m"
+	;;
+*)
+	FPU=""
+    ARM_ARCH="v6m"
+    BENCHMARK="v6m"
+	;;
+esac
+ARCH_FLAGS="-mthumb -mcpu=$CPU $FPU"
 CC_FLAGS="$C_FLAGS $ARCH_FLAGS"
 
 TOOL="$CC $CC_FLAGS $FAST_FLAGS"
 
-SRCDIR=./$TARGET
-DSTDIR=./crypto_${ALGOTYPE}/$TARGET/$IMPL
-BUILDDIR=./bin
+#make source tree for benchmark without hint about the target
+IMPL="opt_$BENCHMARK-$CPU"
+SRCDIR=./crypto_${ALGOTYPE}/$TARGET/$IMPL
 
+#make source tree for benchmark with hint about the target
+GSRCDIR=./crypto_${ALGOTYPE}/$TARGET/opt_arm_cortex-m
+
+BUILDDIR=./bin/libs/$CPU
 mkdir --parent $BUILDDIR
 
+#build libraries
 case $ALGOTYPE in
 aead)
 	SUPERCOP_C_FILE=encrypt.c
@@ -51,7 +83,25 @@ esac
 
 rm -f ${BUILDDIR}/fg.o
 rm -f ${BUILDDIR}/encrypt.o
+rm -f ${BUILDDIR}/drygascon.o
+rm -f ${BUILDDIR}/aead-common.o
+rm -f ${BUILDDIR}/internal-drysponge.o
 
-$TOOL $DSTDIR/drygascon128_arm-cm0.S -c -o ${BUILDDIR}/fg.o
-$TOOL -I $DSTDIR $DSTDIR/encrypt.c -c -o ${BUILDDIR}/encrypt.o
-$AR rcs ${BUILDDIR}/libdrygascon128.a ${BUILDDIR}/encrypt.o ${BUILDDIR}/fg.o
+$TOOL $SRCDIR/drygascon128_arm-${BENCHMARK}.S -c -o ${BUILDDIR}/fg.o
+$TOOL -I $SRCDIR $SRCDIR/drygascon.c -c -o ${BUILDDIR}/drygascon.o
+$TOOL -I $SRCDIR $SRCDIR/aead-common.c -c -o ${BUILDDIR}/aead-common.o
+$TOOL -I $SRCDIR $SRCDIR/internal-drysponge.c -c -o ${BUILDDIR}/internal-drysponge.o
+$AR rcs ${BUILDDIR}/libdrygascon128_arm-${ARM_ARCH}-$CPU.a ${BUILDDIR}/fg.o ${BUILDDIR}/drygascon.o ${BUILDDIR}/aead-common.o ${BUILDDIR}/internal-drysponge.o
+
+$TOOL -I $SRCDIR -DKSIZE=${KSIZE} genkat_${ALGOTYPE}.c newlib_stubs.c $SRCDIR/$SUPERCOP_C_FILE ${BUILDDIR}/fg.o ${BUILDDIR}/drygascon.o ${BUILDDIR}/aead-common.o ${BUILDDIR}/internal-drysponge.o -o ${BUILDDIR}/${TARGET}k${KSIZE}_genkat_${ALGOTYPE}_${IMPL}
+
+#case $FPU in
+#"")
+#	#do nothing
+#	;;
+#*)
+#    $TOOL $SRCDIR/drygascon128_arm-${ARM_ARCH}_fpu.S -c -o ${BUILDDIR}/fg.o
+#    $TOOL -I $SRCDIR $SRCDIR/drygascon.c -c -o ${BUILDDIR}/drygascon.o
+#    $AR rcs ${BUILDDIR}/libdrygascon128_arm-${ARM_ARCH}-${CPU}_fpu.a ${BUILDDIR}/drygascon.o ${BUILDDIR}/fg.o
+#	;;
+#esac

@@ -7,9 +7,9 @@
 #IMPL="ref"
 #ALGOTYPE="hash"
 
-if [ "$#" -ne 4 ]; then
+if [ "$#" -ne 5 ]; then
     echo "Illegal number of parameters"
-    echo "[aead|hash] target param impl"
+    echo "[aead|hash] target param impl keysize"
     exit 1
 fi
 
@@ -17,6 +17,7 @@ ALGOTYPE=$1
 TARGETBASE=$2
 PARAM=$3
 IMPL=$4
+KSIZE=$5
 
 TARGET=${TARGETBASE}$PARAM
 
@@ -25,21 +26,50 @@ OPT_FLAGS="-O3 -msse2 -msse -march=native -maes -mtune=native -fomit-frame-point
 DBG_FLAGS="-O0 -fsanitize=address,undefined "
 
 TOOL="gcc $BASE_FLAGS $OPT_FLAGS"
-
+#TOOL="gcc -Wall -Wextra -march=native -mtune=native -O3 -fomit-frame-pointer -fwrapv -I ."
 SRCDIR=./$TARGET
-DSTDIR=./crypto_${ALGOTYPE}/$TARGET/$IMPL
 BUILDDIR=./bin
 
 mkdir --parent $BUILDDIR
 
 case $ALGOTYPE in
 aead)
-	SUPERCOP_C_FILE=encrypt.c
-	;;
+    DSTDIR=./crypto_aead/${TARGET}k${KSIZE}/${IMPL}
+	SUPERCOP_C_FILE=${DSTDIR}/encrypt.c
+    ;;
 *)
-	SUPERCOP_C_FILE=${ALGOTYPE}.c
-	;;
+	DSTDIR=./crypto_${ALGOTYPE}/${TARGET}/${IMPL}
+    SUPERCOP_C_FILE=${DSTDIR}/${ALGOTYPE}.c
+    ;;
+esac
+echo "build $DSTDIR"
+
+case $TARGETBASE in
+gascon)
+    SUPERCOP_C_FILE=$DSTDIR/encrypt.c
+    ;;
 esac
 
-$TOOL -I $DSTDIR main_${ALGOTYPE}.c -o ${BUILDDIR}/${TARGET}_${ALGOTYPE}_${IMPL}
-$TOOL -I $DSTDIR genkat_${ALGOTYPE}.c ${DSTDIR}/${SUPERCOP_C_FILE} -o ${BUILDDIR}/${TARGET}_genkat_${ALGOTYPE}_${IMPL}
+OTHER_C_FILES=""
+MAKEMAIN=1
+case $IMPL in
+ref)
+    ;;
+le32)
+    ;;
+le64)
+    ;;
+*)
+    OTHER_C_FILES="$DSTDIR/aead-common.c $DSTDIR/drygascon.c $DSTDIR/internal-drysponge.c"
+    MAKEMAIN=0
+    ;;
+esac
+
+if [ $MAKEMAIN -eq 1 ]
+then
+    $TOOL -I $DSTDIR -DKSIZE=${KSIZE} main_${ALGOTYPE}.c ${OTHER_C_FILES} -o ${BUILDDIR}/${TARGET}k${KSIZE}_${ALGOTYPE}_${IMPL}
+
+    rm -f ${BUILDDIR}/${TARGET}_${ALGOTYPE}_${IMPL} 
+    ln -s ${TARGET}k${KSIZE}_${ALGOTYPE}_${IMPL} ${BUILDDIR}/${TARGET}_${ALGOTYPE}_${IMPL} 
+fi
+$TOOL -I $DSTDIR -DKSIZE=${KSIZE} genkat_${ALGOTYPE}.c ${OTHER_C_FILES} ${SUPERCOP_C_FILE} -o ${BUILDDIR}/${TARGET}k${KSIZE}_genkat_${ALGOTYPE}_${IMPL}

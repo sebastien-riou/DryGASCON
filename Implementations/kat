@@ -10,11 +10,12 @@ ALGOTYPE=$1
 TARGETBASE=$2
 PARAM=$3
 IMPL=$4
+KSIZE=$5
 
 TARGET=${TARGETBASE}$PARAM
 
 BINDIR=../bin
-OUTDIR=./kat_out/${TARGET}/${ALGOTYPE}/${IMPL}
+OUTDIR=./kat_out/${TARGET}k${KSIZE}/${ALGOTYPE}/${IMPL}
 TMPDIR=./tmp
 
 rm -rf ${TMPDIR}
@@ -22,5 +23,5 @@ mkdir --parent $OUTDIR
 mkdir --parent $TMPDIR
 
 cd $TMPDIR
-${BINDIR}/${TARGET}_genkat_${ALGOTYPE}_${IMPL}
+${BINDIR}/${TARGET}k${KSIZE}_genkat_${ALGOTYPE}_${IMPL}
 cp * ../${OUTDIR}

@@ -1,0 +1,18 @@
+#!/bin/sh
+
+TOOL=./build_arm
+
+${TOOL} aead drygascon 128 0 16
+${TOOL} aead drygascon 128 3 16
+${TOOL} aead drygascon 128 4 16
+${TOOL} aead drygascon 128 7 16
+
+${TOOL} aead drygascon 128 0 32
+${TOOL} aead drygascon 128 3 32
+${TOOL} aead drygascon 128 4 32
+${TOOL} aead drygascon 128 7 32
+
+${TOOL} aead drygascon 128 0 56
+${TOOL} aead drygascon 128 3 56
+${TOOL} aead drygascon 128 4 56
+${TOOL} aead drygascon 128 7 56
