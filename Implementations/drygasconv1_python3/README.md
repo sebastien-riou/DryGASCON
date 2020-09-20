@@ -1,8 +1,14 @@
-# drysponge
+# drysponge python package
 
-Reference code for DryGASCON
+Reference code for DryGASCON AEAD and hash algorythmes.
 
-## Examples
+## Installation
+See [pypi.org/project/drysponge](https://pypi.org/project/drysponge/).
+
+## Python usage examples
+See [drygascon.readthedocs.io](https://drygascon.readthedocs.io/en/latest/).
+
+## CLI usage Examples
 
 ### AEAD encryption
 
