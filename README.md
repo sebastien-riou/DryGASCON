@@ -1,13 +1,12 @@
 # DryGASCON
 DryGASCON is an AEAD and hash algorithm submitted to [NIST lightweight crypto competition](https://csrc.nist.gov/Projects/Lightweight-Cryptography/round-2-candidates)
 
-The [official specification](https://csrc.nist.gov/CSRC/media/Projects/lightweight-cryptography/documents/round-2/spec-doc-rnd2/drygascon-spec-round2.pdf) is hosted by NIST.
+The [official specification](https://csrc.nist.gov/CSRC/media/Projects/lightweight-cryptography/documents/round-2/spec-doc-rnd2/drygascon-spec-round2.pdf) is hosted by NIST. [Status update](https://csrc.nist.gov/CSRC/media/Projects/lightweight-cryptography/documents/round-2/status-update-sep2020/DryGASCON_20200917-status-update.pdf).
 
+## Implementations
 This repository contains several hardware and software implementation. You can find also other implementations on other repositories:
 * Rhys Weatherley's [pure C and AVR](https://github.com/rweather/lightweight-crypto/tree/master/src/individual/DryGASCON) implementations supports AEAD and hash.
 * Ekawat 'Ice' Homsirikamol's [VHDL / Verilog](https://github.com/sebastien-riou/DryGASCON-LWC-API) implementation supports AEAD and hash, follows the [LWC hardware API](https://cryptography.gmu.edu/athena/index.php?id=LWC)
-
-Benchmark of software implementations: https://lwc.las3.de
 
 This repository contains:
 * updated files compared to the official submission
@@ -16,6 +15,25 @@ This repository contains:
 Python3 package:
 * [read the docs page](https://drygascon.readthedocs.io/en/latest/): To use in your Python code
 * [pypi page](https://pypi.org/project/drysponge): Examples to use from command line
+
+## Benchmarks
+Benchmark of software implementations: 
+- https://lwc.las3.de
+- https://rweather.github.io/lightweight-crypto
+    - [Initial ranking](https://rweather.github.io/lightweight-crypto/performance.html)
+    - [Updated results](https://rweather.github.io/lightweight-crypto/performance_phase2.html)
+
+Benchmarks on hardware implementations:
+- [GMU_LWC_Round_2_FPGA_Benchmarking](https://cryptography.gmu.edu/athena/LWC/GMU_LWC_Round_2_FPGA_Benchmarking.pdf)
+
+## Academic papers
+The following papers mention DryGASCON:
+- [distinguishers-for-reduced-round-ascon-drygascon-shamash-lwc2019](https://csrc.nist.gov/CSRC/media/Events/lightweight-cryptography-workshop-2019/documents/papers/distinguishers-for-reduced-round-ascon-drygascon-shamash-lwc2019.pdf)
+- [Mode-Level vs. Implementation-Level Physical Security
+in Symmetric Cryptography A Practical Guide Through
+the Leakage-Resistance Jungle](https://hal.archives-ouvertes.fr/hal-02901380/document)
+
+As DryGASCON core permutation is closely related to ASCON, much of the cryptanalysis work done on ASCON can be adapted to DryGASCON. All it takes is a reordering of the bits and change of few constants.
 
 ## Cryptanalysis challenges
 To encourage more analysis of DryGASCON, I offer the following challenges:
