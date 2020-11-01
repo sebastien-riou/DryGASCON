@@ -1,0 +1,9 @@
+Implementations/bin/
+Implementations/drygasconv1_python3/build/
+Implementations/drygasconv1_python3/dist/
+Implementations/drygasconv1_python3/drysponge.egg-info/
+__pycache__
+Implementations/tmp/
+Implementations/kat_out/
+Implementations/drygasconv1_hx8k_fpga/target/
+Implementations/drygasconv1_hx8k_fpga/project/target/

@@ -5,6 +5,7 @@ The [official specification](https://csrc.nist.gov/CSRC/media/Projects/lightweig
 
 ## Implementations
 This repository contains several hardware and software implementation. You can find also other implementations on other repositories:
+* [DryGASCON128k32 optimized for ARM Cortex-M](https://github.com/sebastien-riou/DryGASCON128k32-arm-cortex-m).
 * Rhys Weatherley's [pure C and AVR](https://github.com/rweather/lightweight-crypto/tree/master/src/individual/DryGASCON) implementations supports AEAD and hash.
 * Ekawat 'Ice' Homsirikamol's [VHDL / Verilog](https://github.com/sebastien-riou/DryGASCON-LWC-API) implementation supports AEAD and hash, follows the [LWC hardware API](https://cryptography.gmu.edu/athena/index.php?id=LWC)
 
@@ -17,7 +18,7 @@ Python3 package:
 * [pypi page](https://pypi.org/project/drysponge): Examples to use from command line
 
 ## Benchmarks
-Benchmark of software implementations: 
+Benchmark of software implementations:
 - https://lwc.las3.de
 - https://rweather.github.io/lightweight-crypto
     - [Initial ranking](https://rweather.github.io/lightweight-crypto/performance.html)
