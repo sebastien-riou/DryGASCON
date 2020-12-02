@@ -37,23 +37,20 @@ the Leakage-Resistance Jungle](https://hal.archives-ouvertes.fr/hal-02901380/doc
 As DryGASCON core permutation is closely related to ASCON, much of the cryptanalysis work done on ASCON can be adapted to DryGASCON. All it takes is a reordering of the bits and change of few constants.
 
 ## Cryptanalysis challenges
-To encourage more analysis of DryGASCON, I offer the following challenges:
-Cryptanalysis Challenge: for each the reward is a full size bottle of chartreuse - DryGASCON-128 F function: how many rounds in G function can you break- DryGASCON-256 F function: same as above
+Cryptanalysis Challenge:
+* DryGASCON-128 F function: how many rounds in G function can you break ?
+* DryGASCON-256 F function: same as above
 
-As DryGASCON is not readily analyzable using classical Cryptanalysis tools, the challenges above may require much more involvement than some of you can afford. For this reason, easier challenges are also offered.
-Classical Cryptanalysis Challenges: for each the reward is a 20cl bottle of chartreuse
+As DryGASCON is not readily analyzable using classical Cryptanalysis tools, the challenges above may require to develop entirely new tools.
+
+Classical Cryptanalysis Challenges:
 * DryGASCON-128 G function: assuming you can xor a 128 bit input value with C 128 LSBs, how many rounds can you break by observing R ?
 * DryGASCON-256 G function: same as above
 * DryGASCON-128 F function, with the assumption that "X" is known to the attacker
-Each reward will be attributed to the author of the best result at the time of Round 3 candidates announcement.
 
 ## Side channel attack challenges
-* Write up a strategy to mount a side channel attack allowing key recovery on DryGASCON: reward is an FPGA board (the board targeted by the FPGA project in this repo)
-* Perform a side channel attack on the FPGA project and recover the full key: reward is a full size bottle of chartreuse.
-
-What is "chartreuse" ?
-* Answer 1: This is a spirit originally made by monks, from herbs gathered from the Chartreuse mountains which happens to be the place where DryGASCON was designed.
-* Answer 2: Something much better than Belgian beers :-p
+* Write up a strategy to mount a side channel attack allowing key recovery on DryGASCON.
+* Perform a side channel attack on the FPGA project and recover the full key.
 
 ## How to build C implementations ?
 From Implementations folder, launch the following command:
