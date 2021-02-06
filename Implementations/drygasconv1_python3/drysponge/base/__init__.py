@@ -24,6 +24,8 @@ class DrySponge(object):
     DS_A = 2
     DS_M = 3
 
+    PRINT_C99 = os.getenv('PRINT_C99',0)
+
     def __init__(self,params):
         assert(0==(params.MinKeyWidth%8))
         assert(0==(params.RateWidth%8))
@@ -115,7 +117,7 @@ class DrySponge(object):
         return self.__VerboseLevel
 
     @staticmethod
-    def bytes_as_hex(block, end=""):
+    def bytes_as_hexstr(block, end=""):
         out=""
         for b in block:
             out += "%02X"%b
@@ -123,8 +125,25 @@ class DrySponge(object):
         return out
 
     @staticmethod
+    def bytes_as_hexc99(block, end=""):
+        out=""
+        sep=""
+        for b in block:
+            out += sep+"0x%02X"%b
+            sep=","
+        out += end
+        return out
+
+    @staticmethod
+    def bytes_as_hex(block, end=""):
+        if DrySponge.PRINT_C99:
+            return DrySponge.bytes_as_hexc99(block,end)
+        else:
+            return DrySponge.bytes_as_hexstr(block,end)
+
+    @staticmethod
     def print_bytes_as_hex(block, end="\n"):
-        print(DrySponge.bytes_as_hex(block,end),end="")
+        print(DrySponge.bytes_as_hex(block),end=end)
 
     def __print_state(self, msg=None, level=0):
         if self.__VerboseLevel >= level:
