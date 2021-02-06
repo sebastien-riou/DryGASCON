@@ -129,18 +129,25 @@ texinfo_documents = [
    'Miscellaneous'),
 ]
 
-if 0:
+if 1:
     on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
     import shutil
     if not on_rtd:  # only import and set the theme if we're building docs locally
-      import sphinx_rtd_theme
-      html_theme = 'sphinx_rtd_theme'
-      html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-      #html_style = 'css/theme_overrides.css'
-      #shutil.makedirs()
-      print(os.getcwd())
-      os.makedirs('../build/html/_static/css/',exist_ok=True)
-      shutil.copyfile('theme_overrides.css', '../build/html/_static/css/theme_overrides.css')
+        if 0:
+          import sphinx_rtd_theme
+          html_theme = 'sphinx_rtd_theme'
+          html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+          #html_style = 'css/theme_overrides.css'
+          #shutil.makedirs()
+          print(os.getcwd())
+          os.makedirs('../build/html/_static/css/',exist_ok=True)
+          shutil.copyfile('theme_overrides.css', '../build/html/_static/css/theme_overrides.css')
+        else:
+          html_context = {
+              'css_files': [
+                  '_static/css/theme_overrides.css',  # override RTD theme
+                  ],
+               }
     else:
       html_context = {
         'css_files': [

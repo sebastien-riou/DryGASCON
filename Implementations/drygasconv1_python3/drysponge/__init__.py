@@ -1,6 +1,6 @@
 """DryGASCON reference implementation"""
 
-__version__ = '1.0.9'
+__version__ = '1.0.10'
 __title__ = 'drysponge'
 __description__ = 'DryGASCON reference implementation'
 __long_description__ = """
