@@ -99,7 +99,7 @@ latex_elements = {
   'papersize': 'a4paper',
   'fncychap': '',  # No Title Page
   'releasename': '',
-  'sphinxsetup': 'hmargin={2.0cm,2.0cm}, vmargin={2.5cm,2.5cm}, marginpar=5cm',
+  'sphinxsetup': 'hmargin={2.0cm,2.0cm}, vmargin={2.5cm,2.5cm}, marginpar=5cm, verbatimforcewraps',
   'classoptions': ',openany,oneside',  # Avoid blank page aftre TOC, etc.
   'preamble': preamble,
   'releasename': ''
